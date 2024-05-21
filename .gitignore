@@ -1,0 +1,9 @@
+.DS_Store
+._*
+*.o
+*.a
+*.vscode
+obj
+1
+4
+pipex
