@@ -6,11 +6,12 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 17:09:39 by gasroman          #+#    #+#             */
-/*   Updated: 2024/05/21 12:10:39 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/05/24 18:02:35 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../inc/pipex.h"
+
 
 /*	1 - En el parceo debemos ver que el cada argumento sea del tipo requerido 
 			(ac[1] y ac[4] files y ac[2] y ac[3] comandos)
@@ -21,40 +22,68 @@
 		
 */
 
-void	parsing_open(char *file, int *fd, int flag)
+
+int	print_error(int type, int exit_status, char *str)
+{
+	int	tmp;
+
+	tmp = (type == 1) && fd_printf(2, "Pipex: %s: %s", str, NO_ARGUMENTS);
+	tmp = (type == 2) && fd_printf(2, "Pipex: %s: %s", str, NO_COMMAND);
+	tmp = (type == 3) && fd_printf(2, "Pipex: %s: %s", str, NO_MEMORY);
+	if (type == -1)
+		perror("Pipex");
+	(void)tmp;
+	return (exit_status);
+}
+
+int	parsing_open(char *file, int *fd, int flag)
 {
 	int	permits;
 	int	mode;
+	int	rec;
 
-	permits = ((flag == IN_FILE) * O_RDONLY) + ((flag == OUT_FILE)
+	rec = ((flag == IN_FILE) * access(file, F_OK | R_OK));
+	permits = ((flag == IN_FILE) * O_RDONLY | O_WRONLY) + ((flag == OUT_FILE)
 			* (O_WRONLY | O_CREAT | O_TRUNC));
 	mode = ((flag == IN_FILE) * O_RDONLY) + ((flag == OUT_FILE)
 			* 0644);
 	*fd = open(file, permits, mode);
-	if (*fd == ERROR)
-		return (printf("Source file does not exist\n"));
+	if (rec != 0 || *fd == ERROR)
+		return (print_error(ERROR, 1, file));
+	return (EXIT_SUCCESS);
 }
 
+char	*get_path(char **env)
+{
+	char	*path;
+	int		i;
+	char	**split_path;
 
+	i = 0;
+	path = NULL;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], "PATH=", 5) == 0)
+		{
+			path = env[i] + 5;
+			break ;
+		}
+		i++;
+	}
+	split_path = ft_split(path, ':');
+	return (path);
+}
 
 int	main(int ac, char **av, char **env)
 {
-	int	fd_src;
-	int	fd_out;
+	t_pipex	pipx;
+	int		fd_src;
+	int		fd_out;
 
 	(void)env;
 	(void)av;
 	(void)ac;
-	// if (ac != 5)
-	// 	return (0);
 	
-	// fd_out = open(av[ac - 1], O_RDONLY);
-	// if (fd_out == -1)
-		// fd_out = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	// if (fd_out == -1)
-	// 	exit (printf("Failed to create fd_out\n"));
-	// printf("fd_src = %d\n", fd_src);
-	// printf("fd_out = %d\n", fd_out);
 	// close(fd_src);
 	// close(fd_out);
 
@@ -69,6 +98,8 @@ int	main(int ac, char **av, char **env)
 
 	// }
 	// printf("%d, %d", O_RDONLY, (O_WRONLY | O_CREAT | O_TRUNC));
+	pipx.path = get_path(env);
+	//printf("The path to this enviroment is: %s\n", pipx.path);
 	parsing_open(av[1], &fd_src, IN_FILE);
 	parsing_open(av[4], &fd_out, OUT_FILE);
 	return (0);

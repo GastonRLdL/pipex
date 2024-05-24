@@ -6,7 +6,7 @@
 #    By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/20 23:42:36 by gasroman          #+#    #+#              #
-#    Updated: 2024/05/21 12:10:43 by gasroman         ###   ########.fr        #
+#    Updated: 2024/05/21 15:40:41 by gasroman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,7 +50,7 @@ all: dir $(NAME)
 -include $(DEP)
 
 dir:
-	@make -C $(LIB_PATH)
+	@make --no-print-directory -C $(LIB_PATH)
 	@mkdir -p $(DIR_OBJ)
 
 print:
@@ -62,6 +62,8 @@ $(DIR_OBJ)%.o: $(SRC_PATH)%.c
 
 $(NAME): $(OBJ)
 	@$(CC) $(FLAGS) $(OBJ) $(LIB) -o $(NAME) $(INC)
+	@echo "\n$(G)$(NAME) succesfully compiled...$(E)"
+
 
 # ========================== CLEAN   ===================================== #
 
@@ -70,7 +72,7 @@ fclean: clean
 
 clean:
 	$(RM) $(DIR_OBJ)
-	@make clean -C $(LIB_PATH)
+	@make --no-print-directory clean -C $(LIB_PATH)
 
 re: fclean all
 .PHONY: clean fclean re
