@@ -6,7 +6,7 @@
 #    By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/20 23:42:36 by gasroman          #+#    #+#              #
-#    Updated: 2024/05/21 15:40:41 by gasroman         ###   ########.fr        #
+#    Updated: 2024/06/12 13:58:35 by gasroman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,7 @@ $(DIR_OBJ)%.o: $(SRC_PATH)%.c
 	@printf "\r$(G)$<$(E) to $(P)$@$(E)                           "
 
 $(NAME): $(OBJ)
-	@$(CC) $(FLAGS) $(OBJ) $(LIB) -o $(NAME) $(INC)
+	@$(CC) $(FLAGS) $(OBJ) $(LIB) -no-pie -o $(NAME) $(INC)
 	@echo "\n$(G)$(NAME) succesfully compiled...$(E)"
 
 

@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 17:09:39 by gasroman          #+#    #+#             */
-/*   Updated: 2024/05/24 18:02:35 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/06/13 14:38:23 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char	*get_path(char **env)
 {
 	char	*path;
 	int		i;
-	char	**split_path;
+	//char	**split_path;
 
 	i = 0;
 	path = NULL;
@@ -70,35 +70,26 @@ char	*get_path(char **env)
 		}
 		i++;
 	}
-	split_path = ft_split(path, ':');
+	//split_path = ft_split(path, ':');
 	return (path);
 }
 
 int	main(int ac, char **av, char **env)
 {
 	t_pipex	pipx;
+	t_token	f_cmd;
+	t_token	s_cmd;
 	int		fd_src;
 	int		fd_out;
 
 	(void)env;
 	(void)av;
 	(void)ac;
+	if (ac != 5)
+		return (print_error(1, 1, NULL));
 	
-	// close(fd_src);
-	// close(fd_out);
-
-	// int  i;
-
-	// i = 0;
-	// while (++i < ac)
-	// {
-	// 	ft_printf("The argument %i is: %s\n", i, av[i]);
-	// 	if (i == IN_FILE)
-	// 		parsing_open(av[i], &fd_src, IN_FILE);
-
-	// }
-	// printf("%d, %d", O_RDONLY, (O_WRONLY | O_CREAT | O_TRUNC));
-	pipx.path = get_path(env);
+	init_pipx(pipx, ac, av);
+	//pipx.path = get_path(env);
 	//printf("The path to this enviroment is: %s\n", pipx.path);
 	parsing_open(av[1], &fd_src, IN_FILE);
 	parsing_open(av[4], &fd_out, OUT_FILE);

@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 16:22:46 by gasroman          #+#    #+#             */
-/*   Updated: 2024/05/24 17:55:24 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/06/13 13:00:11 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,20 @@
 # define NO_ARGUMENTS	"Invalid number of arguments\n"
 # define NO_MEMORY 		"Error trying to allocate memory\n"
 
+
+typedef struct s_pipex
+{
+	pid_t	pid1;
+	pid_t	pid2;
+	char	*path;
+	char	*in_file;
+	char	*out_file;
+	char	*cmmd1;
+	char	*cmmd2;
+	
+}	t_pipex;
+
+
 typedef struct s_token
 {
 	int				status;
@@ -41,10 +55,5 @@ typedef struct s_token
 	char			**cmd;
 	struct s_token	*next;
 }	t_token;
-
-typedef struct s_pipex
-{
-	char	*path;
-}	t_pipex;
 
 #endif
