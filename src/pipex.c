@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 17:09:39 by gasroman          #+#    #+#             */
-/*   Updated: 2024/06/13 14:38:23 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/06/16 06:19:03 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,32 +53,13 @@ int	parsing_open(char *file, int *fd, int flag)
 	return (EXIT_SUCCESS);
 }
 
-char	*get_path(char **env)
-{
-	char	*path;
-	int		i;
-	//char	**split_path;
 
-	i = 0;
-	path = NULL;
-	while (env[i])
-	{
-		if (ft_strncmp(env[i], "PATH=", 5) == 0)
-		{
-			path = env[i] + 5;
-			break ;
-		}
-		i++;
-	}
-	//split_path = ft_split(path, ':');
-	return (path);
-}
 
 int	main(int ac, char **av, char **env)
 {
 	t_pipex	pipx;
-	t_token	f_cmd;
-	t_token	s_cmd;
+	t_token	f_cmmd;
+	t_token	s_cmmd;
 	int		fd_src;
 	int		fd_out;
 
