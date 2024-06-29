@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 16:22:46 by gasroman          #+#    #+#             */
-/*   Updated: 2024/06/16 06:35:41 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/06/26 12:31:34 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <unistd.h>
+# include <sys/wait.h>
 # include "../libft/libft.h"
 # include "../libft/ft_printf.h"
 # include "../libft/fd_printf.h"
@@ -27,33 +28,48 @@
 # define ERROR		   -1
 # define IN_FILE		0
 # define OUT_FILE		1
+
+# define CHILD			0
+
 # define ERROR_MALLOC	3
 # define ERROR_PATH		4
+# define ERROR_FD		5
+# define ERROR_CHILD	6
+
 
 # define NO_FILE 		"No such file or directory\n"
 # define NO_PERMITS		"Permission denied\n"
 # define NO_COMMAND		"Command not found\n"
 # define NO_ARGUMENTS	"Invalid number of arguments\n"
 # define NO_MEMORY 		"Error trying to allocate memory\n"
-
-typedef struct s_pipex
-{
-	pid_t	pid1;
-	pid_t	pid2;
-	char	*path;
-	char	*in_file;
-	char	*out_file;
-	char	*cmmd1;
-	char	*cmmd2;
-
-}	t_pipex;
+# define NO_PATH		"You shall not path\n"
+# define NO_PIPE 		"Insert ERROR MESSAGE\n"
+# define NO_CHILD 		"ABORT:\n"
 
 typedef struct s_token
 {
 	int				status;
+	int				fd_pipes[2];
+	int				pid;
+	int				tmp_fd;
 	char			*path_join;
 	char			**command;
 	struct s_token	*next;
 }	t_token;
+
+//#-----pipex.c----#//
+int			print_error(int type, int exit_status, char *str);
+int			parsing_open(char *file, int *fd, int flag);
+
+//#-----init.c-----#//
+char		*find_path(char **env);
+char		*path_join(char *path, char *command);
+t_token		*init_tokens(int ac, char **av, char **env);
+int			init_child(t_token **token, char **env);
+int			exec_child(t_token **token, char **env);
+
+//#-----aux.c------#//
+void		ft_add_token_back(t_token **token, t_token *new);
+t_token		*ft_tokenlast(t_token *token);
 
 #endif

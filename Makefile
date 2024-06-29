@@ -6,19 +6,19 @@
 #    By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/20 23:42:36 by gasroman          #+#    #+#              #
-#    Updated: 2024/06/12 13:58:35 by gasroman         ###   ########.fr        #
+#    Updated: 2024/06/26 14:16:59 by gasroman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # =============================== VARIABLES ================================== #
 NAME = pipex
-CC = gcc
+CC = cc
 RM = rm -rf
 FLAGS = -Wall -Wextra -Werror -g
 
 # =========================== SOURCES ======================================== #
 SRC_PATH = src/
-SRC = pipex.c
+SRC = pipex.c init.c aux.c
 LIB_PATH = ./libft/
 LIB = $(LIB_PATH)libft.a
 INC =	-I ./inc/
