@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 16:22:46 by gasroman          #+#    #+#             */
-/*   Updated: 2024/06/26 12:31:34 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/07/02 17:08:27 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,38 +23,41 @@
 # include "../libft/ft_printf.h"
 # include "../libft/fd_printf.h"
 
-# define FALSE			0
-# define TRUE			1
-# define ERROR		   -1
-# define IN_FILE		0
-# define OUT_FILE		1
+# define FALSE					0
+# define TRUE					1
+# define ERROR				   -1
+# define IN_FILE				0
+# define OUT_FILE				1
 
-# define CHILD			0
+# define CHILD					0
 
-# define ERROR_MALLOC	3
-# define ERROR_PATH		4
-# define ERROR_FD		5
-# define ERROR_CHILD	6
+# define ERROR_MALLOC			3
+# define ERROR_PATH				4
+# define ERROR_FD				5
+# define ERROR_CHILD			6
+# define ERROR_CMMD_NF			7
 
+# define EXIT_CMMD_NOT_FOUND	127
 
 # define NO_FILE 		"No such file or directory\n"
 # define NO_PERMITS		"Permission denied\n"
 # define NO_COMMAND		"Command not found\n"
 # define NO_ARGUMENTS	"Invalid number of arguments\n"
 # define NO_MEMORY 		"Error trying to allocate memory\n"
-# define NO_PATH		"You shall not path\n"
+# define NO_PATH		"command not found\n"
 # define NO_PIPE 		"Insert ERROR MESSAGE\n"
 # define NO_CHILD 		"ABORT:\n"
 
 typedef struct s_token
 {
-	int				status;
-	int				fd_pipes[2];
-	int				pid;
-	int				tmp_fd;
-	char			*path_join;
-	char			**command;
-	struct s_token	*next;
+	int					status;
+	int					file;
+	int					fd_pipes[2];
+	int					pid;
+	int					tmp_fd;
+	char				*path_join;
+	char				**command;
+	struct s_token		*next;
 }	t_token;
 
 //#-----pipex.c----#//
@@ -71,5 +74,7 @@ int			exec_child(t_token **token, char **env);
 //#-----aux.c------#//
 void		ft_add_token_back(t_token **token, t_token *new);
 t_token		*ft_tokenlast(t_token *token);
+void		free_tokens(t_token **token);
+void		free_double(char **ptr);
 
 #endif

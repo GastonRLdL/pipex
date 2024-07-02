@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 12:46:21 by gasroman          #+#    #+#             */
-/*   Updated: 2024/06/26 16:19:17 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/07/02 17:25:13 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*path_join(char *path, char *command)
 			exit(print_error(ERROR_MALLOC, EXIT_FAILURE, "init at slash"));
 		join = ft_strjoin(at_slash, command);
 		if (!join)
-			exit(print_error(ERROR_MALLOC, EXIT_FAILURE, "init join"));
+			exit(print_error(ERROR_MALLOC, EXIT_FAILURE, "init at join"));
 		if (!access (join, F_OK))
 			return (free(at_slash), clear_split(split_path), join);
 		double_free(&at_slash, &join);
@@ -74,10 +74,6 @@ t_token	*init_tokens(int ac, char **av, char **env)
 			exit(print_error(ERROR_MALLOC, EXIT_FAILURE, "init path join"));
 		token->status = 0;
 		ft_add_token_back(&res, token);
-		// if (i == 0)
-		// 	res = token;
-		// //token->next = res;
-		// token = token->next;
 	}
 	return (res);
 }
@@ -97,27 +93,33 @@ int	init_child(t_token **token, char **env)
 		dup2((*token)->tmp_fd, STDIN_FILENO);
 		close((*token)->tmp_fd);
 		execve((*token)->path_join, (*token)->command, env);
-		exit(127); //Testear posibles casos, ty caro <3
+		if (errno == ENOENT)
+			exit(127);
+		exit(126);
 	}
 	close((*token)->fd_pipes[1]);
 	close((*token)->tmp_fd);
 	(*token)->tmp_fd = (*token)->fd_pipes[0];
+	dup2((*token)->file, (*token)->tmp_fd);
 	return (0);
 }
 
 int	exec_child(t_token **token, char **env)
 {
 	t_token	*iter;
-	int		i;
 
 	iter = *token;
 	while (iter != NULL)
 	{
-		init_child(&iter, env);
+		iter->status = init_child(&iter, env);
 		iter = iter->next;
 	}
-	i = -1;
-	while (++i < 2)
-		waitpid(-1, NULL, WUNTRACED);
+	iter = *token;
+	while (iter)
+	{
+		waitpid(iter->pid, &iter->status, WUNTRACED);
+		iter->status = WEXITSTATUS(iter->status);
+		iter = iter->next;
+	}
 	return (0);
 }
