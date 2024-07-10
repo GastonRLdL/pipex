@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 12:02:00 by gasroman          #+#    #+#             */
-/*   Updated: 2024/07/02 17:11:10 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/07/10 14:55:36 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ void	free_tokens(t_token **token)
 	while (temp)
 	{
 		close(temp->file);
-		close(temp->fd_pipes[0]);
-		close(temp->fd_pipes[1]);
 		free_double(temp->command);
 		free(temp->path_join);
 		aux = temp->next;
@@ -68,4 +66,12 @@ void	free_double(char **ptr)
 			free(ptr[i]);
 		free(ptr);
 	}
+}
+
+int	ft_dup2(int prev, int curr, int std)
+{
+	close(prev);
+	dup2(curr, std);
+	close(curr);
+	return (0);
 }

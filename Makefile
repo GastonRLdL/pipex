@@ -6,7 +6,7 @@
 #    By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/20 23:42:36 by gasroman          #+#    #+#              #
-#    Updated: 2024/06/29 16:40:06 by gasroman         ###   ########.fr        #
+#    Updated: 2024/07/10 17:57:56 by gasroman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@
 NAME = pipex
 CC = cc
 RM = rm -rf
-FLAGS = -Wall -Wextra -Werror -g
+MAKE = make --no-print-directory
+FLAGS = -Wall -Wextra -Werror -g -fsanitize=leak
 
 # =========================== SOURCES ======================================== #
 SRC_PATH = src/
@@ -50,12 +51,13 @@ all: dir $(NAME)
 -include $(DEP)
 
 dir:
-	@make --no-print-directory -C $(LIB_PATH)
 	@mkdir -p $(DIR_OBJ)
+	@$(MAKE) -C $(LIB_PATH)
 
 print:
-	echo "$(DIR_OBJ)"
-	echo "$(OBJ)"
+	@echo "$(DIR_OBJ)"
+	@echo "$(OBJ)"
+
 $(DIR_OBJ)%.o: $(SRC_PATH)%.c
 	@$(CC) -MMD $(FLAGS) -c $< -o $@ $(INC)
 	@printf "\r$(G)$<$(E) to $(P)$@$(E)                           "
@@ -69,10 +71,10 @@ $(NAME): $(OBJ)
 
 fclean: clean
 	$(RM) $(NAME) $(NAME)
+	@$(MAKE) clean -C $(LIB_PATH)
 
 clean:
 	$(RM) $(DIR_OBJ)
-	@make --no-print-directory clean -C $(LIB_PATH)
 
 re: fclean all
 .PHONY: clean fclean re

@@ -6,7 +6,7 @@
 /*   By: gasroman <gasroman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 12:46:21 by gasroman          #+#    #+#             */
-/*   Updated: 2024/07/02 17:25:13 by gasroman         ###   ########.fr       */
+/*   Updated: 2024/07/10 17:54:41 by gasroman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ t_token	*init_tokens(int ac, char **av, char **env)
 	num_cmmd = 1;
 	i = -1;
 	res = NULL;
-	while (++i < (ac - 3))
+	while (++i < (ac - 2))
 	{
 		token = ft_calloc(1, sizeof(t_token));
 		if (!token)
@@ -73,53 +73,41 @@ t_token	*init_tokens(int ac, char **av, char **env)
 		if (!token->path_join)
 			exit(print_error(ERROR_MALLOC, EXIT_FAILURE, "init path join"));
 		token->status = 0;
+		token->argv = av;
 		ft_add_token_back(&res, token);
 	}
 	return (res);
 }
 
-int	init_child(t_token **token, char **env)
+int	init_child(t_token **token, char **env, int i, int *tmp)
 {
-	if (pipe((*token)->fd_pipes) == ERROR)
-		exit(print_error(ERROR_FD, EXIT_FAILURE, "init pipe"));
-	(*token)->pid = fork();
-	if ((*token)->pid == ERROR)
-		exit(print_error(ERROR_CHILD, EXIT_FAILURE, "init child"));
-	if ((*token)->pid == CHILD)
+	int	pars;
+
+	pars = 0;
+	if (i == 0)
 	{
-		close((*token)->fd_pipes[0]);
-		dup2((*token)->fd_pipes[1], STDOUT_FILENO);
-		close((*token)->fd_pipes[1]);
-		dup2((*token)->tmp_fd, STDIN_FILENO);
-		close((*token)->tmp_fd);
-		execve((*token)->path_join, (*token)->command, env);
-		if (errno == ENOENT)
-			exit(127);
-		exit(126);
+		pars = parsing_open((*token)->argv[1], &(*token)->file, IN_FILE);
+		dup2((*token)->file, STDIN_FILENO);
+		close((*token)->file);
 	}
-	close((*token)->fd_pipes[1]);
-	close((*token)->tmp_fd);
-	(*token)->tmp_fd = (*token)->fd_pipes[0];
-	dup2((*token)->file, (*token)->tmp_fd);
+	else if (i == 1)
+	{
+		pars = parsing_open((*token)->argv[4], &(*token)->file, OUT_FILE);
+		dup2((*token)->file, STDOUT_FILENO);
+		close((*token)->file);
+	}
+	if (pars != 0)
+		exit(pars);
+	ft_dup2(tmp[0], tmp[1], STDOUT_FILENO);
+	execve((*token)->path_join, (*token)->command, env);
+	if (errno == ENOENT)
+		exit(print_error(ERROR_CMD_NF, EXIT_CMD_NOT_FOUND, *(*token)->command));
+	exit(print_error(ERROR_NO_PRMT, EXIT_CMD_ERROR, *(*token)->command));
 	return (0);
 }
 
-int	exec_child(t_token **token, char **env)
+void	pid_waiter(t_token **token)
 {
-	t_token	*iter;
-
-	iter = *token;
-	while (iter != NULL)
-	{
-		iter->status = init_child(&iter, env);
-		iter = iter->next;
-	}
-	iter = *token;
-	while (iter)
-	{
-		waitpid(iter->pid, &iter->status, WUNTRACED);
-		iter->status = WEXITSTATUS(iter->status);
-		iter = iter->next;
-	}
-	return (0);
+	waitpid((*token)->next->pid, &(*token)->next->status, WUNTRACED);
+	(*token)->next->status = WEXITSTATUS((*token)->next->status);
 }
